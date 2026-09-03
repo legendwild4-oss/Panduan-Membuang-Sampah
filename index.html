@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Membuang Sampah Interaktif</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f0fdf4; color: #166534; padding: 20px; line-height: 1.6; }
+    
+    header { text-align: center; margin-bottom: 25px; }
+    h1 { color: #15803d; margin-bottom: 5px; }
+    p.subtitle { color: #166534; font-size: 0.95rem; }
+
+    /* Navigasi Menu Utama */
+    .menu-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 25px; }
+    .btn-menu { background-color: #22c55e; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .btn-menu:hover { background-color: #16a34a; transform: translateY(-2px); }
+
+    /* Layout Halaman */
+    .page { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 850px; margin: 0 auto; }
+    .active { display: block; }
+    h2 { color: #15803d; margin-bottom: 15px; border-bottom: 2px solid #bbf7d0; padding-bottom: 8px; }
+
+    /* CSS Materi */
+    .materi-card { background: #f8fafc; border-left: 5px solid #22c55e; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+    .materi-card h3 { color: #0f766e; margin-bottom: 5px; }
+    .badge { display: inline-block; padding: 3px 8px; font-size: 12px; font-weight: bold; color: white; border-radius: 4px; margin: 5px 0; }
+    .badge-hijau { background-color: #16a34a; }
+    .badge-kuning { background-color: #ca8a04; }
+    .badge-merah { background-color: #dc2626; }
+    .badge-abu { background-color: #4b5563; }
+    .badge-biru { background-color: #2563eb; }
+
+    /* CSS Kuis */
+    .quiz-block { margin-bottom: 20px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa; }
+    .quiz-block p { font-weight: 600; margin-bottom: 10px; color: #1e293b; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-btn { background: white; border: 1px solid #cbd5e1; padding: 10px; text-align: left; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+    .opt-btn:hover { background: #e2e8f0; }
+    .tf-container { display: flex; gap: 10px; }
+    .tf-btn { flex: 1; padding: 10px; border: 1px solid #cbd5e1; background: white; font-weight: bold; cursor: pointer; border-radius: 6px; }
+    .matching-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+    .matching-select { padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+    .feedback { margin-top: 8px; font-weight: bold; font-size: 14px; display: none; }
+    .feedback.correct { color: #16a34a; }
+    .feedback.wrong { color: #dc2626; }
+    .explanation { font-size: 13px; color: #475569; font-weight: normal; margin-top: 4px; }
+    .btn-submit { background: #15803d; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; }
+    .btn-submit:hover { background: #166534; }
+
+    /* CSS Game */
+    .game-instructions { text-align: center; margin-bottom: 15px; }
+    .trash-pool { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; min-height: 100px; background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    
+    .trash-item-img {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px;
+      width: 95px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    .trash-item-img:hover { transform: scale(1.05); }
+    .trash-item-img img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      margin-bottom: 5px;
+      pointer-events: none;
+    }
+    .trash-item-img span {
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+      color: #334155;
+    }
+
+    .bins-container { display: flex; justify-content: space-around; gap: 15px; flex-wrap: wrap; }
+    .bin {
+      width: 30%;
+      min-width: 140px;
+      min-height: 180px;
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+    }
+    .bin img { width: 80px; height: auto; pointer-events: none; margin-bottom: 8px; }
+    .bin-title { font-weight: bold; font-size: 13px; padding: 4px 8px; border-radius: 4px; color: white; width: 100%; }
+    .bin-organik { border-color: #16a34a; background: #f0fdf4; }
+    .bin-organik .bin-title { background: #16a34a; }
+    .bin-anorganik { border-color: #ca8a04; background: #fefce8; }
+    .bin-anorganik .bin-title { background: #ca8a04; }
+    .bin-b3 { border-color: #dc2626; background: #fef2f2; }
+    .bin-b3 .bin-title { background: #dc2626; }
+
+    .score-board { text-align: center; font-size: 18px; font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Panduan Membuang Sampah Interaktif</h1>
+    <p class="subtitle">Pelajari materinya, uji pemahamanmu lewat kuis, atau mainkan game pemilahan sampah!</p>
+  </header>
+
+  <!-- Navigasi Menu Utama -->
+  <div class="menu-container">
+    <button class="btn-menu" onclick="showPage('materi')">📚 Pelajari Materi</button>
+    <button class="btn-menu" onclick="showPage('kuis')">✏️ Kerjakan Soal / Kuis</button>
+    <button class="btn-menu" onclick="showPage('game')">🎮 Game Memilah Sampah</button>
+  </div>
+
+  <!-- HALAMAN 1: MATERI -->
+  <div id="materi" class="page active">
+    <h2>Materi: Panduan Membuang Sampah Sesuai Jenisnya</h2>
+    <p style="margin-bottom: 15px;">Sampah yang kita hasilkan setiap hari perlu dikelola dengan baik agar tidak merusak lingkungan. Pemilahan di sumbernya adalah langkah awal yang paling krusial.</p>
+
+    <div class="materi-card">
+      <h3>1. Sampah Organik (Sampah Basah / Mudah Membusuk)</h3>
+      <span class="badge badge-hijau">Warna Tempat Sampah: Hijau</span>
+      <p><b>Karakteristik:</b> Berasal dari sisa makhluk hidup dan terurai secara alami dalam waktu singkat.</p>
+      <p><b>Contoh:</b> Sisa makanan, kulit buah, daun kering, tulang ikan/ayam, cangkang telur, dan sisa sayuran.</p>
+      <p><b>Pengolahan:</b> Kompos, pakan ternak, atau budidaya maggot (Black Soldier Fly).</p>
+    </div>
+
+    <div class="materi-card">
+      <h3>2. Sampah Anorganik (Sampah Kering / Daur Ulang)</h3>
+      <span class="badge badge-kuning">Warna Tempat Sampah: Kuning</span>
+      <p><b>Karakteristik:</b> Berasal dari bahan non-hayati/sintetis yang sulit terurai alami, namun bisa didaur ulang.</p>
+      <p><b>Contoh:</b> Botol/gelas plastik, kaleng minuman, kardus, kertas bekas, botol kaca, dan sedotan plastik.</p>
+      <p><b>Pengolahan:</b> Didaur ulang di pabrik, kerajinan tangan (upcycling), atau ke Bank Sampah.</p>
+    </div>
+
+    <div class="materi-card">
+      <h3>3. Sampah B3 (Bahan Berbahaya dan Beracun)</h3>
+      <span class="badge badge-merah">Warna Tempat Sampah: Merah</span>
+      <p><b>Karakteristik:</b> Mengandung zat kimia beracun yang berbahaya bagi manusia, hewan, dan lingkungan.</p>
+      <p><b>Contoh:</b> Baterai bekas, lampu neon/bohlam, botol racun serangga, obat kedaluwarsa, pembersih lantai, dan sisa cat.</p>
+      <p><b>Pengolahan:</b> Penanganan khusus oleh pihak terlisensi (tidak boleh dibakar/dikubur sembarangan).</p>
+    </div>
+
+    <div class="materi-card">
+      <h3>4. Sampah Residu</h3>
+      <span class="badge badge-abu">Warna Tempat Sampah: Abu-abu / Hitam</span>
+      <p><b>Karakteristik:</b> Sampah yang tidak bisa didaur ulang atau dimanfaatkan kembali karena alasan higiene/kontaminasi.</p>
+      <p><b>Contoh:</b> Popok bayi bekas (diaper), pembalut, tisu bekas pakai, puntung rokok, dan plastik kemasan makanan foil/saset kotor.</p>
+      <p><b>Pengolahan:</b> Dikirim ke TPA atau diolah melalui insinerator (Waste-to-Energy).</p>
+    </div>
+
+    <div class="materi-card">
+      <h3>5. Sampah Kertas (Kategori Khusus Pemisahan)</h3>
+      <span class="badge badge-biru">Warna Tempat Sampah: Biru</span>
+      <p><b>Karakteristik:</b> Kertas bersih yang dipisahkan agar tidak basah terkena minyak atau air sisa makanan.</p>
+      <p><b>Contoh:</b> Koran, majalah, kertas HVS bekas, dan dus makanan bersih.</p>
+    </div>
+
+    <div style="background: #e0f2fe; padding: 15px; border-radius: 8px; margin-top: 20px;">
+      <h4 style="color: #0369a1; margin-bottom: 5px;">💡 Manfaat Memilah Sampah dari Rumah:</h4>
+      <ul style="margin-left: 20px;">
+        <li><b>Mengurangi Beban TPA:</b> Mengurangi tumpukan sampah di tempat pemrosesan akhir.</li>
+        <li><b>Memudahkan Daur Ulang:</b> Petugas dan Bank Sampah dapat mengolah sampah dengan cepat dan bersih.</li>
+        <li><b>Mencegah Bahaya Kesehatan:</b> Mengurangi risiko ledakan gas metana dan pencemaran zat B3 ke tanah.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- HALAMAN 2: KUIS -->
+  <div id="kuis" class="page">
+    <h2>Soal Latihan: Pemilahan Sampah</h2>
+
+    <!-- A. PG -->
+    <h3 style="margin: 15px 0 10px 0; color: #0f766e;">A. Pilihan Ganda</h3>
+    
+    <div class="quiz-block" id="q1">
+      <p>1. Ibu Lina baru saja memasak di dapur dan memiliki sisa kulit buah mangga serta daun bayam. Jenis sampah tersebut termasuk ke dalam kategori...</p>
+      <div class="options">
+        <button class="opt-btn" onclick="answerPG(1, 'a')">a. Sampah Anorganik</button>
+        <button class="opt-btn" onclick="answerPG(1, 'b')">b. Sampah Organik</button>
+        <button class="opt-btn" onclick="answerPG(1, 'c')">c. Sampah B3</button>
+        <button class="opt-btn" onclick="answerPG(1, 'd')">d. Sampah Residu</button>
+      </div>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-block" id="q2">
+      <p>2. Warna tempat sampah yang secara umum digunakan untuk menampung jenis sampah anorganik (seperti botol plastik dan kaleng) adalah...</p>
+      <div class="options">
+        <button class="opt-btn" onclick="answerPG(2, 'a')">a. Hijau</button>
+        <button class="opt-btn" onclick="answerPG(2, 'b')">b. Merah</button>
+        <button class="opt-btn" onclick="answerPG(2, 'c')">c. Kuning</button>
+        <button class="opt-btn" onclick="answerPG(2, 'd')">d. Abu-abu</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <div class="quiz-block" id="q3">
+      <p>3. Manakah di antara benda-benda berikut yang termasuk ke dalam kategori sampah B3 (Bahan Berbahaya dan Beracun)?</p>
+      <div class="options">
+        <button class="opt-btn" onclick="answerPG(3, 'a')">a. Popok bayi bekas dan tisu</button>
+        <button class="opt-btn" onclick="answerPG(3, 'b')">b. Cangkang telur dan daun kering</button>
+        <button class="opt-btn" onclick="answerPG(3, 'c')">c. Baterai bekas dan botol semprotan nyamuk</button>
+        <button class="opt-btn" onclick="answerPG(3, 'd')">d. Kardus sepatu dan kertas koran</button>
+      </div>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <!-- B. Benar / Salah -->
+    <h3 style="margin: 25px 0 10px 0; color: #0f766e;">B. Benar / Salah</h3>
+
+    <div class="quiz-block" id="q4">
+      <p>4. Sampah jenis residu seperti popok bekas dan tisu basah sangat cocok dan mudah untuk diolah menjadi pupuk kompos di rumah.</p>
+      <div class="tf-container">
+        <button class="tf-btn" onclick="answerTF(4, true)">BENAR</button>
+        <button class="tf-btn" onclick="answerTF(4, false)">SALAH</button>
+      </div>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+    <div class="quiz-block" id="q5">
+      <p>5. Baterai bekas dan bohlam lampu mati tidak boleh dibuang bersamaan dengan sampah organik karena mengandung zat beracun yang dapat mencemari lingkungan.</p>
+      <div class="tf-container">
+        <button class="tf-btn" onclick="answerTF(5, true)">BENAR</button>
+        <button class="tf-btn" onclick="answerTF(5, false)">SALAH</button>
+      </div>
+      <div class="feedback" id="fb5"></div>
+    </div>
+
+    <div class="quiz-block" id="q6">
+      <p>6. Mengubah sampah organik menjadi kompos adalah salah satu cara efektif untuk mengurangi tumpukan sampah yang dikirim ke TPA.</p>
+      <div class="tf-container">
+        <button class="tf-btn" onclick="answerTF(6, true)">BENAR</button>
+        <button class="tf-btn" onclick="answerTF(6, false)">SALAH</button>
+      </div>
+      <div class="feedback" id="fb6"></div>
+    </div>
+
+    <!-- C. Menjodohkan -->
+    <h3 style="margin: 25px 0 10px 0; color: #0f766e;">C. Memasangkan Jawaban (Matching)</h3>
+    <p style="font-size: 13px; margin-bottom: 10px;">Pasangkanlah jenis sampah berikut dengan opsi keterangan yang paling tepat!</p>
+
+    <div class="quiz-block">
+      <div class="matching-row">
+        <span><b>7. Sampah Organik</b></span>
+        <select id="m7" class="matching-select">
+          <option value="">-- Pilih Pasangan --</option>
+          <option value="A">A. Botol kaca, kaleng soda, dan kardus kering</option>
+          <option value="B">B. Batu baterai, cairan pembersih, dan neon bekas</option>
+          <option value="C">C. Sisa makanan, daun gugur, dan kulit buah</option>
+        </select>
+      </div>
+      <div class="matching-row">
+        <span><b>8. Sampah Anorganik</b></span>
+        <select id="m8" class="matching-select">
+          <option value="">-- Pilih Pasangan --</option>
+          <option value="A">A. Botol kaca, kaleng soda, dan kardus kering</option>
+          <option value="B">B. Batu baterai, cairan pembersih, dan neon bekas</option>
+          <option value="C">C. Sisa makanan, daun gugur, dan kulit buah</option>
+        </select>
+      </div>
+      <div class="matching-row">
+        <span><b>9. Sampah B3</b></span>
+        <select id="m9" class="matching-select">
+          <option value="">-- Pilih Pasangan --</option>
+          <option value="A">A. Botol kaca, kaleng soda, dan kardus kering</option>
+          <option value="B">B. Batu baterai, cairan pembersih, dan neon bekas</option>
+          <option value="C">C. Sisa makanan, daun gugur, dan kulit buah</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="checkMatching()">Periksa Jawaban Menjodohkan</button>
+      <div class="feedback" id="fbMatch"></div>
+    </div>
+  </div>
+
+  <!-- HALAMAN 3: GAME -->
+  <div id="game" class="page">
+    <h2>Game Memilah Sampah</h2>
+    <div class="game-instructions">
+      <p>Tarik (*drag*) gambar sampah di bawah ini lalu lepaskan (*drop*) ke dalam tong sampah yang sesuai!</p>
+    </div>
+
+    <!-- Area Sampah -->
+    <div class="trash-pool" id="trashPool">
+      <!-- B3 -->
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t1" data-type="b3">
+        <img src="baterai.jpg" alt="Baterai Bekas">
+        <span>Baterai Bekas</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t2" data-type="b3">
+        <img src="bohlam.png" alt="Lampu Rusak">
+        <span>Bohlam Rusak</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t3" data-type="b3">
+        <img src="semprotan.png" alt="Racun Serangga">
+        <span>Semprotan Nyamuk</span>
+      </div>
+
+      <!-- Anorganik -->
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t4" data-type="anorganik">
+        <img src="botol.jpg" alt="Botol Plastik">
+        <span>Botol Plastik</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t5" data-type="anorganik">
+        <img src="kaleng.jpg" alt="Kaleng Minuman">
+        <span>Kaleng Minuman</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t6" data-type="anorganik">
+        <img src="kardus.png" alt="Kardus">
+        <span>Kardus Bekas</span>
+      </div>
+
+      <!-- Organik -->
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t7" data-type="organik">
+        <img src="tulang.png" alt="Tulang Ikan">
+        <span>Sisa Tulang</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t8" data-type="organik">
+        <img src="kulit-pisang.jpg" alt="Kulit Pisang">
+        <span>Kulit Buah</span>
+      </div>
+      <div class="trash-item-img" draggable="true" ondragstart="drag(event)" id="t9" data-type="organik">
+        <img src="ranting.jpg" alt="Ranting Kering">
+        <span>Ranting Kering</span>
+      </div>
+    </div>
+
+    <!-- Area 3 Tong Sampah -->
+    <div class="bins-container">
+      <div class="bin bin-b3" ondrop="drop(event, 'b3')" ondragover="allowDrop(event)">
+        <img src="tong-merah.png" alt="Tong Sampah B3">
+        <div class="bin-title">Merah (B3)</div>
+      </div>
+
+      <div class="bin bin-anorganik" ondrop="drop(event, 'anorganik')" ondragover="allowDrop(event)">
+        <img src="tong-kuning.png" alt="Tong Sampah Anorganik">
+        <div class="bin-title">Kuning (Anorganik)</div>
+      </div>
+
+      <div class="bin bin-organik" ondrop="drop(event, 'organik')" ondragover="allowDrop(event)">
+        <img src="tong-hijau.png" alt="Tong Sampah Organik">
+        <div class="bin-title">Hijau (Organik)</div>
+      </div>
+    </div>
+
+    <div class="score-board">
+      Skor Kamu: <span id="gameScore">0</span> / 9
+    </div>
+  </div>
+
+  <script>
+    // Navigasi Pindah Halaman Menu Utama
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    // Logika Kuis PG
+    const answersPG = {
+      1: { key: 'b', exp: 'Kulit buah dan daun adalah bahan alami dari tumbuhan yang mudah membusuk dan terurai secara alami.' },
+      2: { key: 'c', exp: 'Tempat sampah warna kuning digunakan untuk sampah anorganik yang dapat didaur ulang.' },
+      3: { key: 'c', exp: 'Baterai dan botol racun serangga mengandung bahan kimia berbahaya dan beracun (B3).' }
+    };
+
+    function answerPG(qNum, choice) {
+      const fb = document.getElementById(`fb${qNum}`);
+      fb.style.display = 'block';
+      if (choice === answersPG[qNum].key) {
+        fb.className = 'feedback correct';
+        fb.innerHTML = `✅ Jawaban Benar!<div class="explanation">Pembahasan: ${answersPG[qNum].exp}</div>`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `❌ Jawaban Salah. Coba lagi!`;
+      }
+    }
+
+    // Logika Kuis TF
+    const answersTF = {
+      4: { key: false, exp: 'Popok bekas dan tisu basah adalah sampah residu yang tidak bisa dijadikan kompos. Yang dijadikan kompos adalah sampah organik.' },
+      5: { key: true, exp: 'Baterai dan bohlam merupakan sampah B3 yang harus dipisahkan agar zat beracunnya tidak membahayakan lingkungan.' },
+      6: { key: true, exp: 'Pembuatan kompos mengurai sampah organik langsung di sumbernya sehingga mengurangi volume sampah ke TPA.' }
+    };
+
+    function answerTF(qNum, choice) {
+      const fb = document.getElementById(`fb${qNum}`);
+      fb.style.display = 'block';
+      if (choice === answersTF[qNum].key) {
+        fb.className = 'feedback correct';
+        fb.innerHTML = `✅ Jawaban Benar!<div class="explanation">Pembahasan: ${answersTF[qNum].exp}</div>`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `❌ Jawaban Salah. Coba lagi!`;
+      }
+    }
+
+    // Logika Kuis Matching
+    function checkMatching() {
+      const m7 = document.getElementById('m7').value;
+      const m8 = document.getElementById('m8').value;
+      const m9 = document.getElementById('m9').value;
+      const fb = document.getElementById('fbMatch');
+      fb.style.display = 'block';
+
+      if (m7 === 'C' && m8 === 'A' && m9 === 'B') {
+        fb.className = 'feedback correct';
+        fb.innerHTML = `✅ Selamat! Semua pasangan benar.<br>
+        <div class="explanation">
+          • Sampah Organik – C (Sisa makanan, daun gugur, kulit buah)<br>
+          • Sampah Anorganik – A (Botol kaca, kaleng soda, kardus)<br>
+          • Sampah B3 – B (Batu baterai, cairan pembersih, neon)
+        </div>`;
+      } else {
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `❌ Masih ada pasangan yang belum tepat. Silakan periksa kembali!`;
+      }
+    }
+
+    // Logika Game Drag & Drop
+    let score = 0;
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev, binType) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text");
+      const draggedElement = document.getElementById(data);
+      if(!draggedElement) return;
+
+      const itemType = draggedElement.getAttribute("data-type");
+
+      if (itemType === binType) {
+        let binElement = ev.target;
+        if (!binElement.classList.contains('bin')) {
+          binElement = binElement.closest('.bin');
+        }
+        
+        binElement.appendChild(draggedElement);
+        draggedElement.style.cursor = "default";
+        draggedElement.setAttribute("draggable", "false");
+        
+        score += 1;
+        document.getElementById("gameScore").innerText = score;
+
+        if (score === 9) {
+          setTimeout(() => alert("🎉 Selamat! Kamu berhasil memilah semua 9 sampah ke tempat yang benar!"), 200);
+        }
+      } else {
+        alert("❌ Ups! Jenis tempat sampahnya belum tepat. Coba lagi!");
+      }
+    }
+  </script>
+</body>
+</html>
